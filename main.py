@@ -1,12 +1,16 @@
 from binance.client import Client
 import redis
 import time
+import os
+
 
 api_key = 'p57TEZpxdiAJyqBNrLqc9SgIXFTyMalaBwiJBvHTsf8HgR5Bs8j6hCsTHPaHSEZe'
 secret_key = 'rHB2svc0r4OlwNmaOerGVHKhlQXYlwNbM4JhVOM0CW27Gk3DTJtLEavfrGMBnSuz'
 client = Client(api_key, secret_key)
 
-host = '10.0.0.3'
+host = os.getenv('REDIS_IP')
+if host == None:
+    raise Exception('Must set environment variable REDIS_IP')
 port = '6379'
 r = redis.Redis(host, port)
 
