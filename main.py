@@ -8,11 +8,14 @@ api_key = 'p57TEZpxdiAJyqBNrLqc9SgIXFTyMalaBwiJBvHTsf8HgR5Bs8j6hCsTHPaHSEZe'
 secret_key = 'rHB2svc0r4OlwNmaOerGVHKhlQXYlwNbM4JhVOM0CW27Gk3DTJtLEavfrGMBnSuz'
 client = Client(api_key, secret_key)
 
-host = os.getenv('REDIS_IP')
-if host == None:
-    raise Exception('Must set environment variable REDIS_IP')
-port = '6379'
-r = redis.Redis(host, port)
+
+def get_redis():
+    host = os.getenv('REDIS_IP')
+    if host == None:
+        raise Exception('Must set environment variable REDIS_IP')
+    port = '6379'
+    r = redis.Redis(host, port)
+    return r
 
 
 def get_price_and_cache(symbol, client):
@@ -35,12 +38,15 @@ def get_price_and_cache(symbol, client):
     return res
 
 if __name__ == '__main__':
+    r = get_redis()
     symbol = 'BNBBTC'
-    starttime = time.time()
+    interval = 1.0  # seconds    
     while True:
+        starttime = time.time()
+        print(starttime)
         get_price_and_cache(symbol, client)
     
         depth_cached = r.hgetall(symbol)
         print(depth_cached)
-        # time.sleep(60.0 - (time.time() - starttime) % 60)
+        time.sleep(interval - (time.time() - starttime) % interval)
 
